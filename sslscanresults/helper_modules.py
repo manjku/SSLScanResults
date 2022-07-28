@@ -8,39 +8,33 @@ from datetime import datetime
 
 HOST_AND_REPORT_DIR = "/tmp/SSLLab_hosts_and_report/Reports/"
 
-api_url = "https://api.ssllabs.com/api/v3/analyze"
-
-CHAIN_ISSUES = {
-    "0": "none",
-    "1": "unused",
-    "2": "incomplete chain",
-    "4": "chain contains unrelated or duplicate certificates",
-    "8": "the certificates form a chain (trusted or not) but incorrect order",
-    "16": "contains a self-signed root certificate",
-    "32": "the certificates form a chain but cannot be validated",
-}
-
-# Forward secrecy protects past sessions against future compromises of secret keys or passwords.
-FORWARD_SECRECY = {
-    "1": "With some browsers WEAK",
-    "2": "With modern browsers",
-    "4": "Yes (with most browsers) ROBUST",
-}
+SSLAB_API_URL = "https://api.ssllabs.com/api/v3/analyze"
 
 SECURITY_PROTOCOLS = [
     "SSL 2.0 INSECURE", "SSL 3.0 INSECURE", "TLS 1.0", "TLS 1.1", "TLS 1.2", "TLS 1.3",       
 ]
 
-RC4 = ["Support RC4", "RC4 with modern protocols", "RC4 Only"]
-
-VULNERABLES = [
-    "Vuln Beast", "Vuln Drown", "Vuln Heartbleed", "Vuln FREAK",
-    "Vuln openSsl Ccs", "Vuln openSSL LuckyMinus20", "Vuln POODLE", "Vuln POODLE TLS"
-]
-
 SUMMARY_COLUMNS = [
-    "Host", "HasWarnings", "Grade", "Cert Expiry", "Chain Status", "Forward Secrecy", "Heartbeat ext"
-] + VULNERABLES + RC4 + SECURITY_PROTOCOLS
+    "Host", "HasWarnings", "Grade", "Cert Expiry", "Chain Status", "Forward Secrecy", "Heartbeat ext",
+    "Support RC4", "RC4 Only", "RC4 with modern protocols", "Vuln Drown", "Vuln FREAK", "Vuln Beast",
+    "Vuln Heartbleed", "Vuln POODLE", "Vuln POODLE TLS", "Vuln openSsl Ccs", "Vuln openSSL LuckyMinus20",
+] + SECURITY_PROTOCOLS
+
+SSLLAB_CHAIN_ISSUES = {
+    "0": "none",
+    "1": "unused",
+    "2": "incomplete chain (set only when we were able to build a chain by adding missing intermediate certificates from external sources)",
+    "4": "chain contains unrelated or duplicate certificates (i.e., certificates that are not part of the same chain)",
+    "8": "the certificates form a chain (trusted or not), but the order is incorrect"
+    "16": "contains a self-signed root certificate (not set for self-signed leafs)",
+    "32": "the certificates form a chain that we could not validate",
+}
+
+SSLLAB_FORWARD_SECRECY = {
+    "1": "at least one browser from our simulations negotiated a Forward Secrecy suite",
+    "2": "FS is achieved with modern clients",
+    "4": "all simulated clients achieved FS",
+}
 
 def get_ssllab_scan_results(host: str, csv_summary_file: str, number_of_attempts: int=20):
     
@@ -76,14 +70,14 @@ def get_ssllab_request_params(host: str):
     return params
     
 def execute_api_url(ssllab_request_params, number_of_attempts):
-    api_response = requests.get(api_url, params=ssllab_request_params)
+    api_response = requests.get(SSLAB_API_URL, params=ssllab_request_params)
     attempts = 0 
     while api_response.status_code != 200 and attempts < number_of_attempts:
         print(f"Response code: {str(api_response.status_code)} - Error on requesting API. "
               f"Waiting for 10 sec until next retry...")
         attempts += 1
         time.sleep(10)
-        api_response = requests.get(api_url, params=ssllab_request_params)
+        api_response = requests.get(SSLAB_API_URL, params=ssllab_request_params)
     return api_response.json()
 
 def summary_csv_append(host, sslab_data, csv_summary_file):
@@ -100,20 +94,20 @@ def summary_csv_append(host, sslab_data, csv_summary_file):
                endpoint["hasWarnings"],
                endpoint["grade"],
                not_after_date,
-               CHAIN_ISSUES[str(endpoint["details"]["certChains"][0]["issues"])],
-               FORWARD_SECRECY[str(endpoint["details"]["forwardSecrecy"])],
+               SSLLAB_CHAIN_ISSUES[str(endpoint["details"]["certChains"][0]["issues"])],
+               SSLLAB_FORWARD_SECRECY[str(endpoint["details"]["forwardSecrecy"])],
                endpoint["details"]["heartbeat"],
-               endpoint["details"]["vulnBeast"],
-               endpoint["details"]["drownVulnerable"],
-               endpoint["details"]["heartbleed"],
+               endpoint["details"]["supportsRc4"],
+               endpoint["details"]["rc4Only"],
+               endpoint["details"]["rc4WithModern"],
+               endpoint["details"]["drownVulnerable"], 
                endpoint["details"]["freak"],
-               False if endpoint["details"]["openSslCcs"] == 1 else True,
-               False if endpoint["details"]["openSSLLuckyMinus20"] == 1 else True,
+               endpoint["details"]["vulnBeast"],
+               endpoint["details"]["heartbleed"],
                endpoint["details"]["poodle"],
                False if endpoint["details"]["poodleTls"] == 1 else True,
-               endpoint["details"]["supportsRc4"],
-               endpoint["details"]["rc4WithModern"],
-               endpoint["details"]["rc4Only"],
+               False if endpoint["details"]["openSslCcs"] == 1 else True,
+               False if endpoint["details"]["openSSLLuckyMinus20"] == 1 else True,        
            ]
            for protocol in SECURITY_PROTOCOLS:
                found = False
