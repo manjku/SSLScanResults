@@ -3,9 +3,10 @@
  
  
 import pandas as pd
- 
+
+csv_file = input("Enter CSV file") 
 # to read csv file named "samplee"
-a = pd.read_csv("summary.csv")
+a = pd.read_csv(csv_file)
  
 # to save as html file
 # named as "Table"

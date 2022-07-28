@@ -23,7 +23,7 @@ html = """\
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>#Host</th>
+      <th>Host</th>
       <th>Grade</th>
       <th>HasWarnings</th>
       <th>Cert Expiry</th>
@@ -52,37 +52,10 @@ html = """\
   <tbody>
     <tr>
       <th>0</th>
-      <td>duckduckgo.com</td>
-      <td>A+</td>
-      <td>False</td>
-      <td>2022-11-26</td>
-      <td>none</td>
-      <td>Yes (with most browsers) ROBUST</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>Yes</td>
-      <td>Yes</td>
-      <td>No</td>
-      <td>No</td>
-      <td>No</td>
-      <td>No</td>
-    </tr>
-    <tr>
-      <th>1</th>
       <td>google.com</td>
       <td>B</td>
       <td>False</td>
-      <td>2022-05-02</td>
+      <td>1664785249000</td>
       <td>none</td>
       <td>With modern browsers</td>
       <td>False</td>
@@ -105,7 +78,6 @@ html = """\
       <td>No</td>
     </tr>
   </tbody>
-</table>
 """
 
 # Turn these into plain/html MIMEText objects
