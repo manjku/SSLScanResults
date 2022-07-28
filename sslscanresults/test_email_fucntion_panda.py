@@ -24,40 +24,45 @@ html = """\
     <tr style="text-align: right;">
       <th></th>
       <th>Host</th>
-      <th>Grade</th>
       <th>HasWarnings</th>
+      <th>Grade</th>
       <th>Cert Expiry</th>
       <th>Chain Status</th>
       <th>Forward Secrecy</th>
       <th>Heartbeat ext</th>
-      <th>Vuln Beast</th>
+      <th>Support RC4</th>
+      <th>RC4 Only</th>
+      <th>RC4 with modern protocols</th>
       <th>Vuln Drown</th>
-      <th>Vuln Heartbleed</th>
       <th>Vuln FREAK</th>
-      <th>Vuln openSsl Ccs</th>
-      <th>Vuln openSSL LuckyMinus20</th>
+      <th>Vuln Beast</th>
+      <th>Vuln Heartbleed</th>
       <th>Vuln POODLE</th>
       <th>Vuln POODLE TLS</th>
-      <th>Support RC4</th>
-      <th>RC4 with modern protocols</th>
-      <th>RC4 Only</th>
-      <th>TLS 1.3</th>
-      <th>TLS 1.2</th>
-      <th>TLS 1.1</th>
-      <th>TLS 1.0</th>
-      <th>SSL 3.0 INSECURE</th>
+      <th>Vuln openSsl Ccs</th>
+      <th>Vuln openSSL LuckyMinus20</th>
       <th>SSL 2.0 INSECURE</th>
+      <th>SSL 3.0 INSECURE</th>
+      <th>TLS 1.0</th>
+      <th>TLS 1.1</th>
+      <th>TLS 1.2</th>
+      <th>TLS 1.3</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
       <td>google.com</td>
-      <td>B</td>
       <td>False</td>
-      <td>1664785249000</td>
+      <td>B</td>
+      <td>12/11/24</td>
       <td>none</td>
-      <td>With modern browsers</td>
+      <td>FS is achieved with modern clients</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
       <td>False</td>
       <td>True</td>
       <td>False</td>
@@ -65,19 +70,15 @@ html = """\
       <td>False</td>
       <td>False</td>
       <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>Yes</td>
-      <td>Yes</td>
-      <td>Yes</td>
-      <td>Yes</td>
       <td>No</td>
       <td>No</td>
+      <td>Yes</td>
+      <td>Yes</td>
+      <td>Yes</td>
+      <td>Yes</td>
     </tr>
   </tbody>
+</table>
 """
 
 # Turn these into plain/html MIMEText objects
