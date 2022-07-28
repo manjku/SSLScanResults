@@ -25,7 +25,7 @@ SSLLAB_CHAIN_ISSUES = {
     "1": "unused",
     "2": "incomplete chain (set only when we were able to build a chain by adding missing intermediate certificates from external sources)",
     "4": "chain contains unrelated or duplicate certificates (i.e., certificates that are not part of the same chain)",
-    "8": "the certificates form a chain (trusted or not), but the order is incorrect"
+    "8": "the certificates form a chain (trusted or not), but the order is incorrect",
     "16": "contains a self-signed root certificate (not set for self-signed leafs)",
     "32": "the certificates form a chain that we could not validate",
 }
@@ -44,10 +44,8 @@ def get_ssllab_scan_results(host: str, csv_summary_file: str, number_of_attempts
     print(csv_summary_file)
 
     while sslab_scan_results["status"] != "READY" and sslab_scan_results["status"] != "ERROR":
-        print(f"Status: {sslab_scan_results['status']}, wait for 10 seconds...")
         time.sleep(10)
         sslab_scan_results = execute_api_url(ssllab_request_params, number_of_attempts)
-        print(f"Status before while loop : {sslab_scan_results['status']}")
 
     date = datetime.now().strftime("%Y_%m_%d-%I:%M:%S_%p")
     json_output_file = os.path.join(os.path.dirname(HOST_AND_REPORT_DIR),"json_reports",f"{host}.json_{date}")
@@ -73,8 +71,6 @@ def execute_api_url(ssllab_request_params, number_of_attempts):
     api_response = requests.get(SSLAB_API_URL, params=ssllab_request_params)
     attempts = 0 
     while api_response.status_code != 200 and attempts < number_of_attempts:
-        print(f"Response code: {str(api_response.status_code)} - Error on requesting API. "
-              f"Waiting for 10 sec until next retry...")
         attempts += 1
         time.sleep(10)
         api_response = requests.get(SSLAB_API_URL, params=ssllab_request_params)
@@ -113,7 +109,6 @@ def summary_csv_append(host, sslab_data, csv_summary_file):
                found = False
                for endpoint_protocol in endpoint["details"]["protocols"]:
                    endpoint_protocol_name = f"{endpoint_protocol['name']} {endpoint_protocol['version']}"
-                   print(f"endpoint_protocol_name is {endpoint_protocol_name}")
                    if protocol == endpoint_protocol_name:
                        found = True
                        break
