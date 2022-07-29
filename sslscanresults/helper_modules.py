@@ -79,7 +79,9 @@ def execute_api_url(ssllab_request_params, number_of_attempts):
 def summary_csv_append(host, sslab_data, csv_summary_file):
     with open(csv_summary_file, "a") as output_file:
         not_after = sslab_data["certs"][0]["notAfter"]
-        not_after_date = time.strftime("%D", time.localtime(int(not_after)))
+        not_after = float(str(not_after)[:10])
+        not_after_date = datetime.utcfromtimestamp(not_after).strftime("%Y-%m-%d")
+
         for endpoint in sslab_data["endpoints"]:
            # Endpoints to be ingored which could not be scanned
            if "Unable" in endpoint["statusMessage"]:

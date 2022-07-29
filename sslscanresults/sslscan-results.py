@@ -19,8 +19,12 @@ def main():
     with open(domain_summary_csv_with_date, "w") as output_file:
         # write column names to the file
         output_file.write("{}\n".format(",".join(SUMMARY_COLUMNS)))
+   
+    hosts_file = ["google.com", "mwam.com", "linkedin.com"]
 
-    data = get_ssllab_scan_results("google.com", domain_summary_csv_with_date)
+    for host in hosts_file:
+        data = get_ssllab_scan_results(host, domain_summary_csv_with_date)
+
     csv_to_html_table(domain_summary_csv_with_date, html_table_location_with_date)
     send_email(html_table_location_with_date)
 
