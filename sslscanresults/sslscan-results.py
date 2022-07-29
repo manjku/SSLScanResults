@@ -5,9 +5,10 @@ import csv
 from datetime import datetime
 from helper_modules import get_ssllab_scan_results, SUMMARY_COLUMNS
 from csv_to_html_table import csv_to_html_table
+from email_helper import send_email
 
 DOMAINS_SUMMARY_CSV = "/tmp/SSLLab_hosts_and_report/Reports/csv_reports/domains_summary.csv"
-HTML_TABLE_LOCATION = "/tmp/SSLLab_hosts_and_report/html_tables/table.html"
+HTML_TABLE_LOCATION = "/tmp/SSLLab_hosts_and_report/Reports/html_reports/table.html"
 
 def main():
     print(SUMMARY_COLUMNS)
@@ -21,6 +22,7 @@ def main():
 
     data = get_ssllab_scan_results("google.com", domain_summary_csv_with_date)
     csv_to_html_table(domain_summary_csv_with_date, html_table_location_with_date)
+    send_email(html_table_location_with_date)
 
 if __name__ == "__main__":
     sys.exit(main())
