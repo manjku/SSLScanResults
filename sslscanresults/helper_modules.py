@@ -77,46 +77,49 @@ def execute_api_url(ssllab_request_params, number_of_attempts):
     return api_response.json()
 
 def summary_csv_append(host, sslab_data, csv_summary_file):
-    with open(csv_summary_file, "a") as output_file:
-        not_after = sslab_data["certs"][0]["notAfter"]
-        not_after = float(str(not_after)[:10])
-        not_after_date = datetime.utcfromtimestamp(not_after).strftime("%Y-%m-%d")
+    try:
+        with open(csv_summary_file, "a") as output_file:
+            not_after = sslab_data["certs"][0]["notAfter"]
+            not_after = float(str(not_after)[:10])
+            not_after_date = datetime.utcfromtimestamp(not_after).strftime("%Y-%m-%d")
 
-        for endpoint in sslab_data["endpoints"]:
-           # Endpoints to be ingored which could not be scanned
-           if "Unable" in endpoint["statusMessage"]:
-               continue
+            for endpoint in sslab_data["endpoints"]:
+               # Endpoints to be ingored which could not be scanned
+               if "Unable" in endpoint["statusMessage"]:
+                   continue
 
-           summary_csv = [
-               host,
-               endpoint["hasWarnings"],
-               endpoint["grade"],
-               not_after_date,
-               SSLLAB_CHAIN_ISSUES[str(endpoint["details"]["certChains"][0]["issues"])],
-               SSLLAB_FORWARD_SECRECY[str(endpoint["details"]["forwardSecrecy"])],
-               endpoint["details"]["heartbeat"],
-               endpoint["details"]["supportsRc4"],
-               endpoint["details"]["rc4Only"],
-               endpoint["details"]["rc4WithModern"],
-               endpoint["details"]["drownVulnerable"], 
-               endpoint["details"]["freak"],
-               endpoint["details"]["vulnBeast"],
-               endpoint["details"]["heartbleed"],
-               endpoint["details"]["poodle"],
-               False if endpoint["details"]["poodleTls"] == 1 else True,
-               False if endpoint["details"]["openSslCcs"] == 1 else True,
-               False if endpoint["details"]["openSSLLuckyMinus20"] == 1 else True,        
-           ]
-           for protocol in SECURITY_PROTOCOLS:
-               found = False
-               for endpoint_protocol in endpoint["details"]["protocols"]:
-                   endpoint_protocol_name = f"{endpoint_protocol['name']} {endpoint_protocol['version']}"
-                   if protocol == endpoint_protocol_name:
-                       found = True
-                       break
-               if found:
-                   summary_csv += ["Yes"]
-               else:
-                   summary_csv += ["No"]
+               summary_csv = [
+                   host,
+                   endpoint["hasWarnings"],
+                   endpoint["grade"],
+                   not_after_date,
+                   SSLLAB_CHAIN_ISSUES[str(endpoint["details"]["certChains"][0]["issues"])],
+                   SSLLAB_FORWARD_SECRECY[str(endpoint["details"]["forwardSecrecy"])],
+                   endpoint["details"]["heartbeat"],
+                   endpoint["details"]["supportsRc4"],
+                   endpoint["details"]["rc4Only"],
+                   endpoint["details"]["rc4WithModern"],
+                   endpoint["details"]["drownVulnerable"],
+                   endpoint["details"]["freak"],
+                   endpoint["details"]["vulnBeast"],
+                   endpoint["details"]["heartbleed"],
+                   endpoint["details"]["poodle"],
+                   False if endpoint["details"]["poodleTls"] == 1 else True,
+                   False if endpoint["details"]["openSslCcs"] == 1 else True,
+                   False if endpoint["details"]["openSSLLuckyMinus20"] == 1 else True,
+               ]
+               for protocol in SECURITY_PROTOCOLS:
+                   found = False
+                   for endpoint_protocol in endpoint["details"]["protocols"]:
+                       endpoint_protocol_name = f"{endpoint_protocol['name']} {endpoint_protocol['version']}"
+                       if protocol == endpoint_protocol_name:
+                           found = True
+                           break
+                   if found:
+                       summary_csv += ["Yes"]
+                   else:
+                       summary_csv += ["No"]
 
-        output_file.write(",".join(str(s) for s in summary_csv) + "\n")
+            output_file.write(",".join(str(s) for s in summary_csv) + "\n")
+    except Exception as err:
+       print(f"ERROR: SSLLabs report for domain {host} could not be added to csv due to Error:\n {err}")
