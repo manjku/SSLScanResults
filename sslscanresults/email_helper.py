@@ -2,8 +2,11 @@ import smtplib, ssl
 import email
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+SENDER_EMAIL = "manoj.cis114@gmail.com"
+RECEIVER_EMAIL = "manoj.cis@gmail.com"
+PASSWORD = "xsijsknfwvukhgnw"
 
-def send_email(html_table_location, sender_email="manoj.cis114@gmail.com", receiver_email="manoj.cis@gmail.com", password="xsijsknfwvukhgnw"):
+def send_email(html_table_location, sender_email=SENDER_EMAIL, receiver_email=RECEIVER_EMAIL, password=PASSWORD):
 
     message = MIMEMultipart("alternative")
     message["Subject"] = "SSL Scan Results Report for Domain names"
