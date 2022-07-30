@@ -27,6 +27,27 @@ def git_push():
         os.chdir(PATH_OF_GIT_REPO)
         print(f"current working directory {os.getcwd()}")
         print("Executing subprocess_run")
+        os.system("git status")
+        os.system("ls")
+        os.system("git add . ")
+        os.system("git commit -m 'new_report'")
+        os.system("git push")
+        print("Completed subprocess_run")
+        os.chdir(cur_dir)
+        print(f"current working directory {os.getcwd()}")
+        print("\n\n\n****** Completed git push ******\n\n\n")
+    except Exception as Err:
+        print(f"ERROR: Could not push the Report repo at {PATH_OF_GIT_REPO} due to error: \n{Err}")
+        return 1
+
+def git_push2():
+    try:
+        print("\n\n\n****** Starting git push for new reports ******\n\n\n")
+        cur_dir = os.getcwd()
+        print(f"current working directory {cur_dir}")
+        os.chdir(PATH_OF_GIT_REPO)
+        print(f"current working directory {os.getcwd()}")
+        print("Executing subprocess_run")
         subprocess.call(["git", "status"])
         subprocess.call(["ls"])
         subprocess.call(["git", "add", "/tmp/SSLLab_hosts_and_report/."])
