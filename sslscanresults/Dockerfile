@@ -9,4 +9,4 @@ RUN git clone https://github.com/manjku/SSLLab_hosts_and_report.git
 WORKDIR /project
 RUN git clone https://github.com/manjku/SSLScanResults.git
 RUN pip3 install -r SSLScanResults/requirements.txt
-CMD SSLScanResults/sslscanresults/sslscan-results.py
+CMD python3 SSLScanResults/sslscanresults/sslscan-results.py
