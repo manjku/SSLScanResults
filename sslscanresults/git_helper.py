@@ -25,10 +25,11 @@ def git_push():
         cur_dir = os.getcwd()
         print(f"current working directory {cur_dir}")
         os.chdir(PATH_OF_GIT_REPO)
-        print("Executing subprocess.run(["git", "add", "."]")
+        print("Executing subprocess_run")
         subprocess.call(["git", "add", "."])
         subprocess.call(["git", "commit", "-m", "'new_report'"])
         subprocess.call(["git", "push"])
+        print("Completed subprocess_run")
         os.chdir(cur_dir)
         print("\n\n\n****** Completed git push ******\n\n\n")
     except Exception as Err:
