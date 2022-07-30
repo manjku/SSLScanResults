@@ -1,9 +1,10 @@
 from git import Repo
 import os
 import shutil
+import subprocess
 
 PATH_OF_GIT_REPO = r'/tmp/SSLLab_hosts_and_report'
-SSLLab_hosts_and_report_GIT_REPO = "https://manjku@github.com/manjku/SSLLab_hosts_and_report.git"
+SSLLab_hosts_and_report_GIT_REPO = "https://github.com/manjku/SSLLab_hosts_and_report.git"
 COMMIT_MESSAGE = 'New reports'
 DESTINATION_PATH_OF_GIT_REPO = os.path.join(PATH_OF_GIT_REPO, ".git")
 
@@ -17,8 +18,22 @@ def clone_report_repo():
     except Exception as Err:
         print(f"ERROR: Could not clone the Report repo at {PATH_OF_GIT_REPO} due to error: \n{Err}")
         return 1
-   
+
 def git_push():
+    try:
+        print("\n\n\n****** Starting git push for new reports ******\n\n\n")
+        cur_dir = os.getcwd()
+        os.chdir(PATH_OF_GIT_REPO)
+        subprocess.run(["git", "add", "."], capture_output=False)
+        subprocess.run(["git", "commit", "-m", "'new_report'"], capture_output=False)
+        subprocess.run(["git", "push"], capture_output=False)
+        os.chdir(cur_dir)
+        print("\n\n\n****** Completed git push ******\n\n\n")
+    except Exception as Err:
+        print(f"ERROR: Could not push the Report repo at {PATH_OF_GIT_REPO} due to error: \n{Err}")
+        return 1
+ 
+def git_push1():
     try:
         repo = Repo(DESTINATION_PATH_OF_GIT_REPO)
         repo.git.add("--all")
