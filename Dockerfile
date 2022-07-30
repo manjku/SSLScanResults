@@ -7,4 +7,4 @@ RUN apt install -y python3-pip
 WORKDIR /project
 RUN git clone https://github.com/manjku/SSLScanResults.git
 RUN pip3 install -r SSLScanResults/requirements.txt
-CMD python3 SSLScanResults/sslscanresults/sslscan-results.py
+CMD python3 /project/SSLScanResults/sslscanresults/sslscan-results.py
