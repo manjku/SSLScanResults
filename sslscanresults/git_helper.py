@@ -27,6 +27,6 @@ def git_push():
         origin.push()
         print(f"Successfully pushed new Reports at [{PATH_OF_GIT_REPO}]")
     except Exception as Err:
-        print(f"ERROR: Could not push the Report repo at {PATH_OF_GIT_REPO} due to error: \nErr")
+        print(f"ERROR: Could not push the Report repo at {PATH_OF_GIT_REPO} due to error: \n{Err}")
         return 1
 
