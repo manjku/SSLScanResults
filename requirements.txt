@@ -12,5 +12,4 @@ urllib3
 PyYAML
 smmap
 gitdb
-GitPython
-
+GitPython==3.1.20
