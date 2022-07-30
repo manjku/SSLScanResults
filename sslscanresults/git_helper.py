@@ -15,7 +15,7 @@ def clone_report_repo():
         Repo.clone_from(SSLLab_hosts_and_report_GIT_REPO, PATH_OF_GIT_REPO)
         print(f"Successfully Cloned rep at [{PATH_OF_GIT_REPO}]")
     except Exception as Err:
-        print(f"ERROR: Could not clone the Report repo at {PATH_OF_GIT_REPO} due to error: \nErr")
+        print(f"ERROR: Could not clone the Report repo at {PATH_OF_GIT_REPO} due to error: \n{Err}")
         return 1
    
 def git_push():
