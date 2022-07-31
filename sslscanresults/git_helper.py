@@ -4,7 +4,7 @@ import shutil
 import subprocess
 
 PATH_OF_GIT_REPO = r'/tmp/SSLLab_hosts_and_report'
-SSLLab_hosts_and_report_GIT_REPO = "https://manjku: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@github.com/manjku/SSLLab_hosts_and_report.git"
+SSLLab_hosts_and_report_GIT_REPO = "git@github.com:manjku/SSLLab_hosts_and_report.git"
 COMMIT_MESSAGE = 'New reports'
 DESTINATION_PATH_OF_GIT_REPO = os.path.join(PATH_OF_GIT_REPO, ".git")
 
