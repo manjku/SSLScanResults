@@ -38,8 +38,11 @@ source my_new_venv/bin/activate
 Get the docker image ID:
 
    **docker images ssllab_report:21.0**
+
    REPOSITORY      TAG       IMAGE ID       CREATED          SIZE
+   
    ssllab_report   21.0      00528c8085e4   37 seconds ago   677MB
 
 Create docker container to execute the tool. Please use the --re option to specify the email to which reports must be sent.
+
    **docker run 00528c8085e4 python3 /project/SSLScanResults/sslscanresults/sslscan-results.py --re manoj.cis115@gmail.com**
