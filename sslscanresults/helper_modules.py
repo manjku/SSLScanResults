@@ -5,6 +5,9 @@ import time
 import requests
 from typing import Dict
 from datetime import datetime
+from pathlib import Path
+from argpare_helper import args
+from logger_helper import logger
 
 HOST_AND_REPORT_DIR = "/tmp/SSLLab_hosts_and_report/Reports/"
 
@@ -41,20 +44,31 @@ def get_ssllab_scan_results(host: str, csv_summary_file: str, number_of_attempts
     ssllab_request_params = get_ssllab_request_params(host)
     sslab_scan_results = execute_api_url(ssllab_request_params, number_of_attempts) 
     ssllab_request_params.pop("startNew")
-    print(csv_summary_file)
 
     while sslab_scan_results["status"] != "READY" and sslab_scan_results["status"] != "ERROR":
+        logger.info(f"Scanning for {host} is still in Progress....")
         time.sleep(10)
         sslab_scan_results = execute_api_url(ssllab_request_params, number_of_attempts)
 
+    logger.info(f"Scanning for [{host}] Completed. Saving the report to CSV ")
     date = datetime.now().strftime("%Y_%m_%d-%I:%M:%S_%p")
-    json_output_file = os.path.join(os.path.dirname(HOST_AND_REPORT_DIR),"json_reports",f"{host}.json_{date}")
 
-    with open(json_output_file, "w") as outputfile:
-        json.dump(sslab_scan_results, outputfile, indent=2)
+    if args.local:
+        script_dir = Path( __file__ ).parent.absolute()
+        json_output_file = os.path.join(script_dir, f"Reports/json_reports/{host}.json_{date}")
+    else:
+        json_output_file = os.path.join(os.path.dirname(HOST_AND_REPORT_DIR),"json_reports",f"{host}.json_{date}")
+
+    try:
+        with open(json_output_file, "w") as outputfile:
+            json.dump(sslab_scan_results, outputfile, indent=2)
+    except Exception as Err:
+        logger.error("json file could not be opened due to error: \n{Err}")     
+        sys.exit(1)
 
     summary_csv_append(host, sslab_scan_results, csv_summary_file)
-
+    logger.info(f"SSLabs report host [{host}] saved to CSV file")   
+ 
     return sslab_scan_results
 
 def get_ssllab_request_params(host: str):
@@ -70,10 +84,15 @@ def get_ssllab_request_params(host: str):
 def execute_api_url(ssllab_request_params, number_of_attempts):
     api_response = requests.get(SSLAB_API_URL, params=ssllab_request_params)
     attempts = 0 
-    while api_response.status_code != 200 and attempts < number_of_attempts:
-        attempts += 1
-        time.sleep(10)
-        api_response = requests.get(SSLAB_API_URL, params=ssllab_request_params)
+    
+    try:
+        while api_response.status_code != 200 and attempts < number_of_attempts:
+            attempts += 1
+            time.sleep(10)
+            api_response = requests.get(SSLAB_API_URL, params=ssllab_request_params)
+    except Exception as Err:
+        logger.error("SSLab api request failed due to error: \n{Err}")
+        sys.exit(1)
     return api_response.json()
 
 def summary_csv_append(host, sslab_data, csv_summary_file):
@@ -122,4 +141,5 @@ def summary_csv_append(host, sslab_data, csv_summary_file):
 
             output_file.write(",".join(str(s) for s in summary_csv) + "\n")
     except Exception as err:
-       print(f"ERROR: SSLLabs report for domain {host} could not be added to csv due to Error:\n {err}")
+       logger.error(f"SSLLabs report for domain {host} could not be added to csv due to Error:\n {err}")
+       sys.exit(1)
