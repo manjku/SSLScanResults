@@ -142,4 +142,4 @@ def summary_csv_append(host, sslab_data, csv_summary_file):
             output_file.write(",".join(str(s) for s in summary_csv) + "\n")
     except Exception as err:
        logger.error(f"SSLLabs report for domain {host} could not be added to csv due to Error:\n {err}")
-       sys.exit(1)
+       logger.info(f"Continuing with the next domain")
