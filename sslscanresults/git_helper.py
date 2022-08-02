@@ -27,6 +27,7 @@ def git_push():
         repo.index.commit(COMMIT_MESSAGE)
         repo.git.push()
         logger.info(f"Successfully pushed new Reports at [{PATH_OF_GIT_REPO}]")
+        logger.info(f"Please check the JSON/CSV Reports at [{https://github.com/manjku/SSLLab_hosts_and_report/tree/main/Reports}]")
     except Exception as Err:
         logger.info(f"Could not push the Report repo at [{PATH_OF_GIT_REPO}] due to error: \n{Err}")
         return 1

@@ -34,6 +34,7 @@ SSLLAB_CHAIN_ISSUES = {
 }
 
 SSLLAB_FORWARD_SECRECY = {
+    "0": "Not Found",
     "1": "at least one browser from our simulations negotiated a Forward Secrecy suite",
     "2": "FS is achieved with modern clients",
     "4": "all simulated clients achieved FS",
@@ -59,6 +60,7 @@ def get_ssllab_scan_results(host: str, csv_summary_file: str, number_of_attempts
     else:
         json_output_file = os.path.join(os.path.dirname(HOST_AND_REPORT_DIR),"json_reports",f"{host}.json_{date}")
 
+    logger.info(f"SSLLab json data for host [{host}] is stored at: [{json_output_file}]")
     try:
         with open(json_output_file, "w") as outputfile:
             json.dump(sslab_scan_results, outputfile, indent=2)
@@ -98,22 +100,28 @@ def execute_api_url(ssllab_request_params, number_of_attempts):
 def summary_csv_append(host, sslab_data, csv_summary_file):
     try:
         with open(csv_summary_file, "a") as output_file:
-            not_after = sslab_data["certs"][0]["notAfter"]
-            not_after = float(str(not_after)[:10])
-            not_after_date = datetime.utcfromtimestamp(not_after).strftime("%Y-%m-%d")
+            summary_csv = [] 
+            if sslab_data["certs"]:
+                not_after = sslab_data["certs"][0]["notAfter"]
+                not_after = float(str(not_after)[:10])
+                not_after_date = datetime.utcfromtimestamp(not_after).strftime("%Y-%m-%d")
+            else:
+                not_after_date = "Not Found"     
 
             for endpoint in sslab_data["endpoints"]:
-               # Endpoints to be ingored which could not be scanned
-               if "Unable" in endpoint["statusMessage"]:
+               # Ignore endpoints that could not be scanned
+               if "Unable" in endpoint["statusMessage"] or "fail" in endpoint["statusMessage"]:
+                   logger.critical(f"Ignoring Host [{host}] endpoint[{endpoint['ipAddress']}] as it recieved unexpected statusMessage [{endpoint['statusMessage']}]")
+                   logger.critical(f"Please check the Host [{host}] json data")
                    continue
 
                summary_csv = [
                    host,
-                   endpoint["hasWarnings"],
-                   endpoint["grade"],
+                   endpoint.get("hasWarnings", "Not Found"),
+                   endpoint.get("grade", "Not Found"),
                    not_after_date,
                    SSLLAB_CHAIN_ISSUES[str(endpoint["details"]["certChains"][0]["issues"])],
-                   SSLLAB_FORWARD_SECRECY[str(endpoint["details"]["forwardSecrecy"])],
+                   SSLLAB_FORWARD_SECRECY[str(endpoint["details"].get("forwardSecrecy", "0"))],
                    endpoint["details"]["heartbeat"],
                    endpoint["details"]["supportsRc4"],
                    endpoint["details"]["rc4Only"],
@@ -127,6 +135,7 @@ def summary_csv_append(host, sslab_data, csv_summary_file):
                    False if endpoint["details"]["openSslCcs"] == 1 else True,
                    False if endpoint["details"]["openSSLLuckyMinus20"] == 1 else True,
                ]
+
                for protocol in SECURITY_PROTOCOLS:
                    found = False
                    for endpoint_protocol in endpoint["details"]["protocols"]:
@@ -138,8 +147,8 @@ def summary_csv_append(host, sslab_data, csv_summary_file):
                        summary_csv += ["Yes"]
                    else:
                        summary_csv += ["No"]
-
-            output_file.write(",".join(str(s) for s in summary_csv) + "\n")
+            if summary_csv:
+                output_file.write(",".join(str(s) for s in summary_csv) + "\n")
     except Exception as err:
        logger.error(f"SSLLabs report for domain {host} could not be added to csv due to Error:\n {err}")
        logger.info(f"Continuing with the next domain")
