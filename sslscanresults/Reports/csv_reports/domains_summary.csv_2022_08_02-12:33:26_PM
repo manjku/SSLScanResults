@@ -1,0 +1,5 @@
+Host,Server Name,HasWarnings,Grade,Cert Expiry,Chain Status,Forward Secrecy,Heartbeat ext,Support RC4,RC4 Only,RC4 with modern protocols,Vuln Drown,Vuln openSsl Ccs,Vuln openSSL LuckyMinus20,SSL 2.0 INSECURE,SSL 3.0 INSECURE,TLS 1.0,TLS 1.1,TLS 1.2,TLS 1.3
+mwam.com,server-65-8-158-8.sfo53.r.cloudfront.net,False,A+,2023-06-27,none,all simulated clients achieved FS,False,False,False,False,False,False,False,No,No,No,No,Yes,Yes
+mwam.com,server-65-8-158-10.sfo53.r.cloudfront.net,False,A+,2023-06-27,none,all simulated clients achieved FS,False,False,False,False,False,False,False,No,No,No,No,Yes,Yes
+mwam.com,server-65-8-158-28.sfo53.r.cloudfront.net,False,A+,2023-06-27,none,all simulated clients achieved FS,False,False,False,False,False,False,False,No,No,No,No,Yes,Yes
+mwam.com,server-65-8-158-99.sfo53.r.cloudfront.net,False,A+,2023-06-27,none,all simulated clients achieved FS,False,False,False,False,False,False,False,No,No,No,No,Yes,Yes

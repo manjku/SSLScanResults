@@ -18,9 +18,8 @@ SECURITY_PROTOCOLS = [
 ]
 
 SUMMARY_COLUMNS = [
-    "Host", "HasWarnings", "Grade", "Cert Expiry", "Chain Status", "Forward Secrecy", "Heartbeat ext",
-    "Support RC4", "RC4 Only", "RC4 with modern protocols", "Vuln Drown", "Vuln FREAK", "Vuln Beast",
-    "Vuln Heartbleed", "Vuln POODLE", "Vuln POODLE TLS", "Vuln openSsl Ccs", "Vuln openSSL LuckyMinus20",
+    "Host", "Server Name", "HasWarnings", "Grade", "Cert Expiry", "Chain Status", "Forward Secrecy", "Heartbeat ext",
+    "Support RC4", "RC4 Only", "RC4 with modern protocols", "Vuln Drown", "Vuln openSsl Ccs", "Vuln openSSL LuckyMinus20",
 ] + SECURITY_PROTOCOLS
 
 SSLLAB_CHAIN_ISSUES = {
@@ -76,10 +75,10 @@ def get_ssllab_scan_results(host: str, csv_summary_file: str, number_of_attempts
 def get_ssllab_request_params(host: str):
     params = {
         "host": host,
-        "ignoreMismatch":"on",
         "all":"done",
-        "publish":"off",
+        "ignoreMismatch":"on",
         "startNew":"off",
+        "publish":"off",
     }
     return params
     
@@ -109,6 +108,7 @@ def summary_csv_append(host, sslab_data, csv_summary_file):
                 not_after_date = "Not Found"     
 
             for endpoint in sslab_data["endpoints"]:
+               logger.info(f"endpoint ipAddress: {endpoint['ipAddress']}    endpoint serverName: {endpoint['serverName']}")
                # Ignore endpoints that could not be scanned
                if "Unable" in endpoint["statusMessage"] or "fail" in endpoint["statusMessage"]:
                    logger.critical(f"Ignoring Host [{host}] endpoint[{endpoint['ipAddress']}] as it recieved unexpected statusMessage [{endpoint['statusMessage']}]")
@@ -117,6 +117,7 @@ def summary_csv_append(host, sslab_data, csv_summary_file):
 
                summary_csv = [
                    host,
+                   endpoint.get("serverName"),
                    endpoint.get("hasWarnings", "Not Found"),
                    endpoint.get("grade", "Not Found"),
                    not_after_date,
@@ -127,11 +128,6 @@ def summary_csv_append(host, sslab_data, csv_summary_file):
                    endpoint["details"]["rc4Only"],
                    endpoint["details"]["rc4WithModern"],
                    endpoint["details"]["drownVulnerable"],
-                   endpoint["details"]["freak"],
-                   endpoint["details"]["vulnBeast"],
-                   endpoint["details"]["heartbleed"],
-                   endpoint["details"]["poodle"],
-                   False if endpoint["details"]["poodleTls"] == 1 else True,
                    False if endpoint["details"]["openSslCcs"] == 1 else True,
                    False if endpoint["details"]["openSSLLuckyMinus20"] == 1 else True,
                ]
@@ -147,8 +143,8 @@ def summary_csv_append(host, sslab_data, csv_summary_file):
                        summary_csv += ["Yes"]
                    else:
                        summary_csv += ["No"]
-            if summary_csv:
-                output_file.write(",".join(str(s) for s in summary_csv) + "\n")
+               if summary_csv:
+                   output_file.write(",".join(str(s) for s in summary_csv) + "\n")
     except Exception as err:
        logger.error(f"SSLLabs report for domain {host} could not be added to csv due to Error:\n {err}")
        logger.info(f"Continuing with the next domain")
